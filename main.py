@@ -1,5 +1,6 @@
 import logging
 import os
+import threading
 
 from telegram.ext import *
 
@@ -60,8 +61,6 @@ def main():
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
 
-    server.setup(int(os.environ.get('PORT', 5000)))
-
     token = "5078454106:AAGg4ENIRZ6HXayopvwxCAwBT9RjF8kyZAk"
     updater = Updater(token, use_context=True)
 
@@ -79,4 +78,5 @@ def main():
 
 
 if __name__ == '__main__':
+    threading.Thread(target=server.setup).start()
     main()
