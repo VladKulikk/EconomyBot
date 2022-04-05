@@ -75,7 +75,7 @@ def main():
     updater.start_polling()
     updater.idle()
 
-    server.setup(updater, token, int(os.environ.get('PORT', 8000)))
+    server.setup(int(os.environ.get('PORT', 8000)))
 
 
 if __name__ == '__main__':

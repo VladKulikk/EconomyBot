@@ -1,4 +1,8 @@
-def setup(updater, token, port):
-    updater.start_webhook(listen="0.0.0.0", port=int(port), url_path=token)
-    updater.bot.setWebhook('https://economy-bot-python.herokuapp.com/' + token)
-    updater.idle()
+import http.server
+import socketserver
+
+
+def setup(port):
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", port), handler) as httpd:
+        httpd.serve_forever()
