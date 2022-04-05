@@ -1,6 +1,9 @@
 import logging
+import os
 
 from telegram.ext import *
+
+import server
 from updater import Updater as NewsUpdater
 from news import *
 
@@ -57,7 +60,8 @@ def main():
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
 
-    updater = Updater("5078454106:AAGg4ENIRZ6HXayopvwxCAwBT9RjF8kyZAk", use_context=True)
+    token = "5078454106:AAGg4ENIRZ6HXayopvwxCAwBT9RjF8kyZAk"
+    updater = Updater(token, use_context=True)
 
     dp = updater.dispatcher
 
@@ -70,6 +74,8 @@ def main():
 
     updater.start_polling()
     updater.idle()
+
+    server.setup(updater, token, int(os.environ.get('PORT', 8000)))
 
 
 if __name__ == '__main__':
