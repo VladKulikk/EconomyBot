@@ -60,6 +60,8 @@ def main():
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
 
+    server.setup(int(os.environ.get('PORT', 5000)))
+
     token = "5078454106:AAGg4ENIRZ6HXayopvwxCAwBT9RjF8kyZAk"
     updater = Updater(token, use_context=True)
 
@@ -74,8 +76,6 @@ def main():
 
     updater.start_polling()
     updater.idle()
-
-    server.setup(int(os.environ.get('PORT', 8000)))
 
 
 if __name__ == '__main__':
