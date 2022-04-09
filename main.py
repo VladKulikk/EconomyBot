@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 users: set = set()
 
-
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = '5078454106:AAF3BB8mc_FFAxTNxPH3obrw0gLfBwngMXY'
 
+
 def startHandler(update, context: CallbackContext):
-    update.message.reply_text(f'Hello {update.message.chat.first_name}, I am economic_news_bot.')
+    update.message.reply_text(f'Hello {update.message.chat.first_name}, I am Economic Bot.')
     helpHandler(update, context)
 
     users.add(update.message)
