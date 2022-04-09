@@ -4,17 +4,22 @@ import threading
 
 from telegram.ext import *
 
-import server
+import app
 from updater import Updater as NewsUpdater
 from news import *
 
 newsUpdater: NewsUpdater
+
+started = False
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 users: set = set()
 
+
+PORT = int(os.environ.get('PORT', 5000))
+TOKEN = '5078454106:AAF3BB8mc_FFAxTNxPH3obrw0gLfBwngMXY'
 
 def startHandler(update, context: CallbackContext):
     update.message.reply_text(f'Hello {update.message.chat.first_name}, I am economic_news_bot.')
@@ -61,8 +66,7 @@ def main():
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
 
-    token = "5078454106:AAGg4ENIRZ6HXayopvwxCAwBT9RjF8kyZAk"
-    updater = Updater(token, use_context=True)
+    updater = Updater(TOKEN, use_context=True)
 
     dp = updater.dispatcher
 
@@ -73,10 +77,13 @@ def main():
 
     dp.add_error_handler(error)
 
-    updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=TOKEN,
+                          webhook_url="https://economy-bot-python.herokuapp.com/" + TOKEN)
+
     updater.idle()
 
 
 if __name__ == '__main__':
-    threading.Thread(target=server.setup).start()
     main()
