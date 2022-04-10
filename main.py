@@ -17,6 +17,8 @@ TOKEN = '5078454106:AAH11W5rIlCui7eH_QD0Omz05QKNbvI3dhM'
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
+isStarted = False
+
 @bot.message_handler(commands=['start'])
 def startHandler(message):
     bot.reply_to(message, f'Hello {message.from_user.first_name}, I am Economic Bot.')
@@ -57,6 +59,9 @@ def getMessage():
 
 @server.route("/")
 def webhook():
+    if isStarted:
+        return 'Bot already started <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9uintH0s7JWTksy8yLqxjAAZOV0F8c4LzmxBSdQuIL4CJdBcpcr8peh_ui7W0gFVJfUg&usqp=CAU">', 200
+
     bot.remove_webhook()
     bot.set_webhook(url='https://economy-bot-python.herokuapp.com/' + TOKEN)
 
@@ -65,6 +70,7 @@ def webhook():
     newsUpdater.start()
 
     return "!", 200
+
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
