@@ -59,6 +59,7 @@ def getMessage():
 
 @server.route("/")
 def webhook():
+    global isStarted
     if isStarted:
         return 'Bot already started <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9uintH0s7JWTksy8yLqxjAAZOV0F8c4LzmxBSdQuIL4CJdBcpcr8peh_ui7W0gFVJfUg&usqp=CAU">', 200
 
@@ -68,6 +69,8 @@ def webhook():
     global newsUpdater
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
+
+    isStarted = True
 
     return "!", 200
 
