@@ -61,7 +61,7 @@ def getMessage():
 def webhook():
     global isStarted
     if isStarted:
-        return 'Bot already started <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9uintH0s7JWTksy8yLqxjAAZOV0F8c4LzmxBSdQuIL4CJdBcpcr8peh_ui7W0gFVJfUg&usqp=CAU">', 200
+        return 'Bot already started', 200
 
     bot.remove_webhook()
     bot.set_webhook(url='https://economy-bot-python.herokuapp.com/' + TOKEN)
