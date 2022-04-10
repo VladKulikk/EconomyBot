@@ -1,3 +1,5 @@
+import threading
+
 import requests
 
 from bs4 import BeautifulSoup
@@ -22,7 +24,7 @@ class NewsList:
     news: list
 
     def __init__(self) -> None:
-        self.load()
+        threading.Thread(target=self.load).start()
 
     def text(self) -> str:
         return "\n".join(list(map(str, self.news)))
