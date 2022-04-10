@@ -1,10 +1,7 @@
 import logging
 import os
-import threading
 
 from telegram.ext import *
-
-import app
 from updater import Updater as NewsUpdater
 from news import *
 
