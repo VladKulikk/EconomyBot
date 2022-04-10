@@ -1,86 +1,65 @@
-import logging
 import os
 
-from telegram.ext import *
+from flask import Flask
+
+import telebot
+
 from updater import Updater as NewsUpdater
 from news import *
 
+
 newsUpdater: NewsUpdater
-
-started = False
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 users: set = set()
 
 PORT = int(os.environ.get('PORT', 5000))
-TOKEN = '5078454106:AAF3BB8mc_FFAxTNxPH3obrw0gLfBwngMXY'
+TOKEN = '5078454106:AAH11W5rIlCui7eH_QD0Omz05QKNbvI3dhM'
+bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
 
+@bot.message_handler(commands=['start'])
+def startHandler(message):
+    bot.reply_to(message, f'Hello {message.from_user.first_name}, I am Economic Bot.')
+    helpHandler(message)
 
-def startHandler(update, context: CallbackContext):
-    update.message.reply_text(f'Hello {update.message.chat.first_name}, I am Economic Bot.')
-    helpHandler(update, context)
+@bot.message_handler(commands=['subscribe'])
+def subscribeHandler(message):
+    bot.reply_to(message, "You successfully subscribed to news\nTo unsubscribe type /unsubscribe")
+    users.add(message)
 
-    users.add(update.message)
+@bot.message_handler(commands=['unsubscribe'])
+def unsubscribeHandler(message):
+    users.remove(message)
 
+@bot.message_handler(commands=['help'])
+def helpHandler(message):
+    bot.reply_to(message, 'I can show you some news, just type /news\nYou can subscribe to news just type /subscribe')
 
-def helpHandler(update, context):
-    update.message.reply_text('I can show you some news, just type /news')
-
-
-def newsHandler(update, context):
+@bot.message_handler(commands=['news'])
+def newsHandler(message):
     global newsUpdater
 
     for news in newsUpdater.news.news:
-        update.message.reply_text(str(news))
-
-
-def loadNewsHandler(update, context):
-    global newsUpdater
-
-    update.message.reply_text("Loading")
-    newsUpdater.news.load()
-    update.message.reply_text("Loading end")
-
-
-def echoHandler(update, context):
-    update.message.reply_text(update.message.text)
-
-
-def error(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+        bot.reply_to(message, str(news))
 
 
 def onUpdate(updated_news: list[News]):
     for news in updated_news:
         for user in users:
-            user.reply_text(str(news))
+            bot.reply_to(user, str(news))
 
 
-def main():
+
+@server.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url='https://economy-bot-python.herokuapp.com/' + TOKEN)
+
     global newsUpdater
     newsUpdater = NewsUpdater(onUpdate)
     newsUpdater.start()
 
-    updater = Updater(TOKEN, use_context=True)
+    return "!", 200
 
-    dp = updater.dispatcher
-
-    dp.add_handler(CommandHandler("start", startHandler))
-    dp.add_handler(CommandHandler("help", helpHandler))
-    dp.add_handler(CommandHandler("news", newsHandler))
-    dp.add_handler(MessageHandler(Filters.text, echoHandler))
-
-    dp.add_error_handler(error)
-
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=TOKEN,
-                          webhook_url="https://economy-bot-python.herokuapp.com/" + TOKEN)
-
-    updater.idle()
-
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
